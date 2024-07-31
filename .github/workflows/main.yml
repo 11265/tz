@@ -1,0 +1,47 @@
+name: Build iOS Kernel Extension
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup Xcode
+      run: |
+        sudo xcode-select -s /Applications/Xcode.app
+
+    - name: Install Dependencies
+      run: |
+        brew install cmake # 如果你的构建需要其他工具或依赖，请在这里安装
+
+    - name: Build Kernel Extension
+      run: |
+        # 进入内核扩展的目录
+        cd path/to/your/kext
+
+        # 创建构建目录
+        mkdir -p build
+        cd build
+
+        # 运行 cmake 和 make 编译
+        cmake ..
+        make
+
+    - name: Sign Kernel Extension
+      run: |
+        # 替换为你的签名证书名称
+        sudo codesign -s "iPhone Developer: Your Name (XXXXXXXXXX)" --force /path/to/your/kext/build/YourKext.kext
+
+    - name: Upload Kernel Extension
+      uses: actions/upload-artifact@v2
+      with:
+        name: ios-kernel-extension
+        path: path/to/your/kext/build/YourKext.kext
