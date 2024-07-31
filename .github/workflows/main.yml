@@ -25,7 +25,7 @@ jobs:
     - name: Build Kernel Extension
       run: |
         # 进入内核扩展的目录
-        cd path/to/your/kext
+        cd kext  # 确保这里的路径与仓库中的实际目录匹配
 
         # 创建构建目录
         mkdir -p build
@@ -38,10 +38,10 @@ jobs:
     - name: Sign Kernel Extension
       run: |
         # 替换为你的签名证书名称
-        sudo codesign -s "iPhone Developer: Your Name (XXXXXXXXXX)" --force /path/to/your/kext/build/YourKext.kext
+        sudo codesign -s "iPhone Developer: Your Name (XXXXXXXXXX)" --force build/YourKext.kext
 
     - name: Upload Kernel Extension
       uses: actions/upload-artifact@v2
       with:
         name: ios-kernel-extension
-        path: path/to/your/kext/build/YourKext.kext
+        path: kext/build/YourKext.kext
