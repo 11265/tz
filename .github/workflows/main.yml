@@ -33,12 +33,15 @@ jobs:
         mkdir -p build
         cd build
 
-        # 运行 xcrun 编译内核扩展
-        xcrun -sdk iphoneos clang -c ../MyKext.c -o MyKext.o -arch arm64 -mios-version-min=14.0
-        xcrun -sdk iphoneos clang -c ../Info.plist -o Info.o -arch arm64 -mios-version-min=14.0
-        
+        # 设置 SDK 路径
+        SDKROOT=$(xcrun --sdk iphoneos --show-sdk-path)
+        export SDKROOT
+
+        # 编译内核扩展
+        xcrun -sdk iphoneos clang -c ../MyKext.c -o MyKext.o -arch arm64 -mios-version-min=14.0 -I${SDKROOT}/System/Library/Frameworks/CoreFoundation.framework/Headers
+
         # 链接对象文件生成内核扩展
-        xcrun -sdk iphoneos clang MyKext.o Info.o -o MyKext.kext -arch arm64 -mios-version-min=14.0 -framework Foundation -framework CoreFoundation
+        xcrun -sdk iphoneos clang MyKext.o -o MyKext.kext -arch arm64 -mios-version-min=14.0 -framework Foundation -framework CoreFoundation
 
     - name: Sign Kernel Extension
       run: |
