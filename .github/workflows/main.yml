@@ -14,34 +14,39 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
+    - name: List directory contents
+      run: |
+        echo "Listing root directory contents:"
+        ls -la
+
     - name: Setup Xcode
       run: |
         sudo xcode-select -s /Applications/Xcode.app
 
     - name: Install Dependencies
       run: |
-        brew install cmake # 如果你的构建需要其他工具或依赖，请在这里安装
+        brew install cmake # 如果需要其他工具或依赖，请在这里安装
 
-    - name: Build Kernel Extension
+    - name: Compile Kernel Extension
       run: |
-        # 进入内核扩展的目录
-        cd kext  # 确保这里的路径与仓库中的实际目录匹配
-
         # 创建构建目录
         mkdir -p build
         cd build
 
-        # 运行 cmake 和 make 编译
-        cmake ..
-        make
+        # 运行 xcrun 编译内核扩展
+        xcrun -sdk iphoneos clang -c ../MyKext.c -o MyKext.o -arch arm64 -mios-version-min=14.0
+        xcrun -sdk iphoneos clang -c ../Info.plist -o Info.o -arch arm64 -mios-version-min=14.0
+        
+        # 链接对象文件生成内核扩展
+        xcrun -sdk iphoneos clang MyKext.o Info.o -o MyKext.kext -arch arm64 -mios-version-min=14.0 -framework Foundation -framework CoreFoundation
 
     - name: Sign Kernel Extension
       run: |
         # 替换为你的签名证书名称
-        sudo codesign -s "iPhone Developer: Your Name (XXXXXXXXXX)" --force build/YourKext.kext
+        sudo codesign -s "iPhone Developer: Your Name (XXXXXXXXXX)" --force build/MyKext.kext
 
     - name: Upload Kernel Extension
       uses: actions/upload-artifact@v2
       with:
         name: ios-kernel-extension
-        path: kext/build/YourKext.kext
+        path: build/MyKext.kext
