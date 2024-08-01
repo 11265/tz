@@ -30,7 +30,7 @@ jobs:
 
     - name: Build with Xcode
       run: |
-        xcodebuild -workspace YourWorkspace.xcworkspace -scheme YourScheme -sdk iphoneos -configuration Release build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+        xcodebuild -project MyProject.xcodeproj -scheme MyScheme -sdk iphoneos -configuration Release build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
         
     - name: Upload artifact
       uses: actions/upload-artifact@v2
