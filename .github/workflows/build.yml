@@ -8,29 +8,38 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     
     steps:
     - uses: actions/checkout@v2
 
     - name: Install dependencies
       run: |
-        sudo apt-get update
-        sudo apt-get install -y fakeroot git perl clang rsync libtinfo5 curl
+        brew install ldid xz
         
     - name: Setup Theos
       run: |
         git clone --recursive https://github.com/theos/theos.git $GITHUB_WORKSPACE/theos
+        cd $GITHUB_WORKSPACE/theos
+        ./bin/update-theos
         curl -LO https://github.com/theos/sdks/archive/master.zip
         unzip master.zip -d $GITHUB_WORKSPACE/theos/sdks
         mv $GITHUB_WORKSPACE/theos/sdks/sdks-master/* $GITHUB_WORKSPACE/theos/sdks/
         rm -rf $GITHUB_WORKSPACE/theos/sdks/sdks-master master.zip
 
+    - name: Verify Theos installation
+      run: |
+        ls -R $GITHUB_WORKSPACE/theos
+        echo $THEOS
+
+    - name: Update PATH
+      run: echo "$GITHUB_WORKSPACE/theos/bin" >> $GITHUB_PATH
+
     - name: Build
       env:
         THEOS: ${{ github.workspace }}/theos
       run: |
-        make package
+        make package THEOS=$THEOS
 
     - name: Upload artifact
       uses: actions/upload-artifact@v2
