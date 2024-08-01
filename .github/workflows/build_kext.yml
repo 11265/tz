@@ -22,23 +22,18 @@ jobs:
       run: |
         brew install ldid
         
-    - name: Set up theos
+    - name: Set up Theos (if needed)
       run: |
         git clone --recursive https://github.com/theos/theos.git $GITHUB_WORKSPACE/theos
         echo "THEOS=$GITHUB_WORKSPACE/theos" >> $GITHUB_ENV
         echo "$GITHUB_WORKSPACE/theos/bin" >> $GITHUB_PATH
 
-    - name: Install SDK
+    - name: Build with Xcode
       run: |
-        git clone https://github.com/theos/sdks.git $GITHUB_WORKSPACE/sdks
-        mv $GITHUB_WORKSPACE/sdks/*.sdk $GITHUB_WORKSPACE/theos/sdks/
-
-    - name: Build Kernel Extension
-      run: |
-        make
-
+        xcodebuild -workspace YourWorkspace.xcworkspace -scheme YourScheme -sdk iphoneos -configuration Release build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+        
     - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
-        name: PageTableModifier.dylib
-        path: .theos/obj/debug/PageTableModifier.dylib
+        name: PageTableModifier
+        path: build/Release-iphoneos/PageTableModifier.dylib
