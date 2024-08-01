@@ -3,7 +3,7 @@ CFLAGS = -Wall -Wextra -Werror -arch arm64 -isysroot $(shell xcrun --sdk iphoneo
 LDFLAGS = -arch arm64 -isysroot $(shell xcrun --sdk iphoneos --show-sdk-path) -Xlinker -kext -nostdlib
 
 TARGET = MyKernelExtension
-
+THEOS_PACKAGE_SCHEME = rootless#多巴胺支持
 $(TARGET): src/$(TARGET).c
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $<
 
