@@ -22,18 +22,23 @@ jobs:
       run: |
         brew install ldid
         
-    - name: Set up Theos (if needed)
+    - name: Create Xcode Project
       run: |
-        git clone --recursive https://github.com/theos/theos.git $GITHUB_WORKSPACE/theos
-        echo "THEOS=$GITHUB_WORKSPACE/theos" >> $GITHUB_ENV
-        echo "$GITHUB_WORKSPACE/theos/bin" >> $GITHUB_PATH
-
-    - name: Build with Xcode
-      run: |
+        # Assuming you need to create an Xcode project file
+        # Here is an example command to create a basic Xcode project
+        # You may need to customize this step based on your needs
+        mkdir MyProject
+        cd MyProject
         xcodebuild -project MyProject.xcodeproj -scheme MyScheme -sdk iphoneos -configuration Release build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
-        
+
+    - name: Build Kernel Extension
+      run: |
+        # Adjust this command based on your actual build commands
+        # This example assumes you have a Makefile or other build script
+        make -f ../build_kext.yml
+
     - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
-        name: PageTableModifier
+        name: PageTableModifier.dylib
         path: build/Release-iphoneos/PageTableModifier.dylib
