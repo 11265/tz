@@ -1,6 +1,6 @@
-CC = clang
-CFLAGS = -Wall -arch arm64 -isysroot $(shell xcrun --sdk iphoneos --show-sdk-path)
-LDFLAGS = -arch arm64 -isysroot $(shell xcrun --sdk iphoneos --show-sdk-path)
+CC = xcrun -sdk iphoneos clang
+CFLAGS = -Wall -arch arm64 -isysroot $(shell xcrun --sdk iphoneos --show-sdk-path) -fno-common -mkernel -nostdlib -fno-builtin -ffreestanding
+LDFLAGS = -arch arm64 -isysroot $(shell xcrun --sdk iphoneos --show-sdk-path) -Xlinker -kext
 
 TARGET = MyKernelExtension
 
