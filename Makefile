@@ -1,14 +1,11 @@
-THEOS_DEVICE_IP = 127.0.0.1
-ARCHS = arm64
-TARGET := iphone:clang:latest:7.0
+CC = clang
+CFLAGS = -Wall -arch arm64 -isysroot $(shell xcrun --sdk iphoneos --show-sdk-path)
+LDFLAGS = -arch arm64 -isysroot $(shell xcrun --sdk iphoneos --show-sdk-path)
 
-include $(THEOS)/makefiles/common.mk
+TARGET = MyKernelExtension
 
-LIBRARY_NAME = MyKernelExtension
+$(TARGET): src/$(TARGET).c
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $<
 
-$(LIBRARY_NAME)_FILES = MyKernelExtension.c
-$(LIBRARY_NAME)_CFLAGS = -fobjc-arc
-$(LIBRARY_NAME)_INSTALL_PATH = /Library/MobileSubstrate/DynamicLibraries
-$(LIBRARY_NAME)_LIBRARIES = substrate
-
-include $(THEOS_MAKE_PATH)/library.mk
+clean:
+	rm -f $(TARGET)
