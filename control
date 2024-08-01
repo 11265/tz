@@ -1,0 +1,8 @@
+Package: com.example.mykernelextension
+Name: MyKernelExtension
+Version: 0.0.1
+Architecture: iphoneos-arm
+Description: An example iOS kernel extension
+Maintainer: Your Name
+Author: Your Name
+Section: System
