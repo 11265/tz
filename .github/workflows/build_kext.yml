@@ -1,0 +1,43 @@
+name: Build iOS Kernel Extension
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Set up cross-compilation environment
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y clang llvm lld
+        
+    - name: Install iOS SDK
+      run: |
+        git clone https://github.com/theos/sdks.git
+        sudo mv sdks/*.sdk /usr/share/
+        
+    - name: Build Kernel Extension
+      run: |
+        clang -target arm64-apple-ios \
+          -isysroot /usr/share/iPhoneOS.sdk \
+          -fno-stack-protector \
+          -ffreestanding \
+          -mkernel \
+          -nostdlib \
+          -Wl,-kext \
+          -Wl,-export_dynamic \
+          -o PageTableModifier.kext \
+          PageTableModifier.c
+        
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: PageTableModifier.kext
+        path: PageTableModifier.kext
