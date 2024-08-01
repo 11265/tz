@@ -1,0 +1,39 @@
+name: Build iOS Kernel Extension
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y fakeroot git perl clang-10 rsync libtinfo5 curl
+        
+    - name: Setup Theos
+      run: |
+        git clone --recursive https://github.com/theos/theos.git $GITHUB_WORKSPACE/theos
+        curl -LO https://github.com/theos/sdks/archive/master.zip
+        unzip master.zip -d $GITHUB_WORKSPACE/theos/sdks
+        mv $GITHUB_WORKSPACE/theos/sdks/sdks-master/* $GITHUB_WORKSPACE/theos/sdks/
+        rm -rf $GITHUB_WORKSPACE/theos/sdks/sdks-master master.zip
+
+    - name: Build
+      env:
+        THEOS: ${{ github.workspace }}/theos
+      run: |
+        make package
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: MyKernelExtension
+        path: packages/*.deb
