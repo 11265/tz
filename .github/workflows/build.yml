@@ -15,34 +15,44 @@ jobs:
 
     - name: Install dependencies
       run: |
-        brew install ldid xz
-        
-    - name: Setup Theos
-      run: |
-        git clone --recursive https://github.com/theos/theos.git $GITHUB_WORKSPACE/theos
-        cd $GITHUB_WORKSPACE/theos
-        ./bin/update-theos
-        curl -LO https://github.com/theos/sdks/archive/master.zip
-        unzip master.zip -d $GITHUB_WORKSPACE/theos/sdks
-        mv $GITHUB_WORKSPACE/theos/sdks/sdks-master/* $GITHUB_WORKSPACE/theos/sdks/
-        rm -rf $GITHUB_WORKSPACE/theos/sdks/sdks-master master.zip
+        brew install ldid dpkg xz
 
-    - name: Verify Theos installation
-      run: |
-        ls -R $GITHUB_WORKSPACE/theos
-        echo $THEOS
+    - name: Set up Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: latest-stable
 
-    - name: Update PATH
-      run: echo "$GITHUB_WORKSPACE/theos/bin" >> $GITHUB_PATH
+    - name: Build project
+      run: make
 
-    - name: Build
-      env:
-        THEOS: ${{ github.workspace }}/theos
+    - name: Create .deb package
       run: |
-        make package THEOS=$THEOS
+        PACKAGE_NAME="com.example.mykernelextension"
+        PACKAGE_VERSION="0.0.1"
+        ARCHITECTURE="iphoneos-arm"
+        INSTALL_PATH="/Library/MobileSubstrate/DynamicLibraries"
+
+        TEMP_DIR=$(mktemp -d)
+        mkdir -p "${TEMP_DIR}${INSTALL_PATH}"
+        mkdir -p "${TEMP_DIR}/DEBIAN"
+
+        cp "MyKernelExtension" "${TEMP_DIR}${INSTALL_PATH}/"
+
+        cat << EOF > "${TEMP_DIR}/DEBIAN/control"
+        Package: ${PACKAGE_NAME}
+        Name: MyKernelExtension
+        Version: ${PACKAGE_VERSION}
+        Architecture: ${ARCHITECTURE}
+        Description: An example iOS kernel extension
+        Maintainer: Your Name
+        Author: Your Name
+        Section: System
+        EOF
+
+        dpkg-deb -b "${TEMP_DIR}" "${PACKAGE_NAME}_${PACKAGE_VERSION}_${ARCHITECTURE}.deb"
 
     - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
         name: MyKernelExtension
-        path: packages/*.deb
+        path: ./*.deb
