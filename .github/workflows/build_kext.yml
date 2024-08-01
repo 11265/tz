@@ -8,18 +8,20 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     
     steps:
     - uses: actions/checkout@v2
     
+    - name: Set up Xcode
+      uses: actions/setup-xcode@v2
+      with:
+        xcode-version: latest
+    
     - name: Install dependencies
       run: |
-        sudo apt-get update
-        sudo apt-get install -y fakeroot git perl clang-10 build-essential
-        sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-10 100
-        sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-10 100
-
+        brew install ldid
+        
     - name: Set up theos
       run: |
         git clone --recursive https://github.com/theos/theos.git $GITHUB_WORKSPACE/theos
@@ -38,5 +40,5 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
-        name: PageTableModifier.kext
-        path: .theos/obj/debug/PageTableModifier.kext
+        name: PageTableModifier.dylib
+        path: .theos/obj/debug/PageTableModifier.dylib
