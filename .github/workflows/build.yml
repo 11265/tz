@@ -23,7 +23,9 @@ jobs:
         xcode-version: latest-stable
 
     - name: Build project
-      run: make
+      run: |
+        make
+        file MyKernelExtension
 
     - name: Create .deb package
       run: |
