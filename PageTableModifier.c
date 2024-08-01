@@ -2,6 +2,8 @@
 #include <mach/vm_types.h>
 #include <mach/vm_map.h>
 #include "PageTableModifier.h"
+#include <Foundation/Foundation.h>
+#include <mach/mach.h>
 
 // 这些函数可能需要你自己实现或从iOS内核源码中获取
 extern pmap_t get_task_pmap(task_t task);
