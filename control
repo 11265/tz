@@ -1,0 +1,8 @@
+Package: com.yourname.pagetablemodifier
+Name: PageTableModifier
+Version: 0.0.1
+Architecture: iphoneos-arm
+Description: An awesome kernel extension!
+Maintainer: Your Name
+Author: Your Name
+Section: System
